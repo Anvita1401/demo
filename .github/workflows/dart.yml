@@ -32,6 +32,3 @@ jobs:
 
       - name: Build android apk and appBundle
         run: flutter build apk
-
-      - name: Build iOS
-        run: flutter build ios --release --no-codesign
