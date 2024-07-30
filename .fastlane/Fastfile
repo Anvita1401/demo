@@ -1,18 +1,22 @@
-default_platform(:android)
+# fastlane/Fastfile
+
+default_platform(:android) # or :android if you are working with an Android project
+
 
 platform :android do
-  desc "Deploy to Firebase App Distribution"
-  lane :beta do
-    build_android_app(
-      task: "assembleRelease",
-      build_type: "Release"
-    )
+  desc "Distribute a new version to Firebase App Distribution"
+  lane :distribute_to_firebase do
+    # Build your app (if not already built)
+    # gradle(
+    #   task: "assembleRelease"
+    # )
+
+    # Distribute the app to Firebase App Distribution
     firebase_app_distribution(
       app: "1:378040104990:android:1991411b9c76072412d60f",
-      testers: "anvita.kaushik@jombay.com",
-      release_notes: "Describe what's new in this build",
-      firebase_cli_path: "/usr/local/bin/firebase",
-      token: ENV['FIREBASE_TOKEN']
+      testers: "anvita.kaushik@jombay.com", # List of testers' emails separated by commas
+      release_notes: "Release notes for this version",
+      groups: "beta-testers" # Optional: a group name in Firebase App Distribution
     )
   end
 end
