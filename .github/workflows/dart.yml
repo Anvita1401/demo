@@ -31,11 +31,6 @@ jobs:
         run: flutter build apk --release
 
 
-      - name: Install Firebase CLI
-        run: |
-          yarn global add firebase-tools
-          echo "$(yarn global bin)" >> $GITHUB_ENV
-
       - name: setup fastlane
         run: bundle install
 
