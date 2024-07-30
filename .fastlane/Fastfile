@@ -11,10 +11,8 @@ platform :android do
       app: "1:378040104990:android:1991411b9c76072412d60f",
       testers: "anvita.kaushik@jombay.com",
       release_notes: "Describe what's new in this build",
-
-
-      firebase_cli_path: "/usr/local/bin/firebase"
-      token: ENV['1//0g5n9GUDQWI9iCgYIARAAGBASNwF-L9IreLrfr_BK397A3fLRmXOH77IVGjYlwjisJKb5EvFvlrafNLhcs-WhHrewn8fzr6eJzqs']
+      firebase_cli_path: "/usr/local/bin/firebase",
+      token: ENV['FIREBASE_TOKEN']
     )
   end
 end
