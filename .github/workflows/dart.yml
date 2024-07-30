@@ -35,5 +35,5 @@ jobs:
 
       - name: Firebase App Distribution
         env:
-          FIREBASE_TOKEN: ${{ secrets.1//0g5n9GUDQWI9iCgYIARAAGBASNwF-L9IreLrfr_BK397A3fLRmXOH77IVGjYlwjisJKb5EvFvlrafNLhcs-WhHrewn8fzr6eJzqs }}
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: fastlane deploy_to_firebase
