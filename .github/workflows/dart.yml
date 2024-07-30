@@ -30,9 +30,18 @@ jobs:
       - name: Build Android APK
         run: flutter build apk --release
 
-      - name: Firebase App Distribution
-        uses: fastlane/fastlane-action@v2
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
-          lane: deploy_to_firebase
+          ruby-version: '3.1' # Specify Ruby version compatible with Fastlane
+
+      - name: Install Bundler
+        run: gem install bundler
+
+      - name: Install Fastlane
+        run: bundle install
+
+      - name: Firebase App Distribution
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: bundle exec fastlane deploy_to_firebase
