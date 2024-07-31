@@ -9,7 +9,7 @@ platform :android do
             app: "1:378040104990:android:1991411b9c76072412d60f",
             groups: "test-group-1",
             release_notes: "Lots of amazing new features to test out!",
-            apk_path: "./build/app/outputs/flutter-apk/app-release.apk"
+            apk_path: "./build/app/outputs/flutter-apk/app-release.apk",
             debug: true
         )
     end
