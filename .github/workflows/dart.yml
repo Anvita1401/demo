@@ -25,7 +25,7 @@ jobs:
         run: flutter build ios --release --no-codesign
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v2
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0'
 
