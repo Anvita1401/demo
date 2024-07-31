@@ -7,38 +7,43 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
 
+  build_ios:
+    runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
+        name: Checkout code
 
-      - uses: actions/setup-java@v1
-        with:
-          java-version: '12.x'
-
-      - uses: subosito/flutter-action@v1
+      - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
-
-      - name: Flutter clean
-        run: flutter clean
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build Android APK
-        run: flutter build apk --release
+      - name: Build iOS IPA
+        run: flutter build ios --release --no-codesign
 
       - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@v2
         with:
           ruby-version: '3.0'
 
-      - name: setup fastlane
+      - name: Setup Fastlane
         run: gem install fastlane
 
-      - name: Run Fastlane
-        run: fastlane distribute
+      - name: Decode and install certificate
+        run: |
+          echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode > ./certificates/certificate.p12
+          security create-keychain -p "" build.keychain
+          security import ./certificates/certificate.p12 -k ~/Library/Keychains/build.keychain -P "" -T /usr/bin/codesign
+          security list-keychains -d user -s ~/Library/Keychains/build.keychain
+
+      - name: Decode and install provisioning profile
+        run: |
+          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+
+      - name: Run Fastlane for iOS
+        run: fastlane distribute --fastfile ios/fastlane/Fastfile
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
