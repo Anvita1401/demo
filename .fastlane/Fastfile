@@ -1,41 +1,15 @@
 # fastlane/Fastfile
-
-default_platform(:android) # or :android if you are working with an Android project
-
+default_platform(:android)
 
 platform :android do
-  desc "Distribute a new version to Firebase App Distribution"
-  lane :distribute_to_firebase do
-    # Build your app (if not already built)
-    # gradle(
-    #   task: "assembleRelease"
-    # )
-
-    # Distribute the app to Firebase App Distribution
-    firebase_app_distribution(
-      app: "1:378040104990:android:1991411b9c76072412d60f",
-      release_notes: "Release notes for this version",
-      groups: "test-group-1"
-    )
-  end
-end
-
-
-platform :ios do
-  desc "Distribute a new version to Firebase App Distribution"
-  lane :distribute_to_firebase do
-    # Build your app (if not already built)
-    build_app(
-      scheme: "YourAppScheme", # Replace with your app's scheme
-      export_method: "app-store" # or "ad-hoc" depending on your needs
-    )
-
-    # Distribute the app to Firebase App Distribution
-    firebase_app_distribution(
-      app: "1:378040104990:android:1991411b9c76072412d60f", # Your Firebase iOS app ID
-      release_notes: "Release notes for this version",
-      groups: "test-group-1", # Optional: a group name in Firebase App Distribution
-      ipa_path: "./path/to/your.app" # Path to your .ipa file
-    )
-  end
+    desc "My awesome app"
+    lane :distribute do
+        build_android_app(...)
+        # build_android_app is a built-in fastlane action.
+        release = firebase_app_distribution(
+            app: "1:378040104990:android:1991411b9c76072412d60f",
+            groups: "test-group-1"
+            release_notes: "Lots of amazing new features to test out!"
+        )
+    end
 end

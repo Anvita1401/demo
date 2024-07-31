@@ -27,9 +27,6 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build Android APK
-        run: flutter build apk --release
-
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -38,8 +35,7 @@ jobs:
       - name: setup fastlane
         run: gem install fastlane
 
-
       - name: Run Fastlane
-        run: bundle exec fastlane distribute_to_firebase
+        run: fastlane distribute
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
