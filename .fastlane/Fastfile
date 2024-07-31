@@ -14,7 +14,6 @@ platform :android do
     # Distribute the app to Firebase App Distribution
     firebase_app_distribution(
       app: "1:378040104990:android:1991411b9c76072412d60f",
-      testers: 'anvita.kaushik@jombay.com'
       release_notes: "Release notes for this version",
       groups: "test-group-1"
     )
