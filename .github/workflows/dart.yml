@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Build Android APK
+        run: flutter build apk --release
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -35,21 +38,11 @@ jobs:
       - name: setup fastlane
         run: gem install fastlane
 
-      - name: Cache CocoaPods
-        uses: actions/cache@v2
-        with:
-          path: Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-pods-
-
-      - name: Install dependencies
-        run: |
-          bundle install
-          pod install
-
-      - name: Build and Distribute iOS App
+      - name: distribute to firebase
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-        run: fastlane distribute_to_firebase
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{secrets.FIREBASE_APP_ID}}
+          serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+          file: build/app/outputs/flutter-apk/app-release.apk
