@@ -8,82 +8,27 @@ on:
 
 jobs:
 
- build_ios:
-  runs-on: macos-latest
-  steps:
-    - uses: actions/checkout@v3
-      name: Checkout code
+  build:
+    name: Build and Deploy
+    runs-on: macos-latest
 
-    - uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: flutter pub get
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0' # Adjust to the Ruby version you use
 
-    - name: Setup Flutter for iOS
-      run: |
-        flutter precache --ios
-        flutter pub get
+      - name: Install dependencies
+        run: |
+          gem install bundler
+          bundle install
+          gem install fastlane
 
-    - name: Create and update Podfile
-      run: |
-        cd ios
-        rm -f Podfile
-        flutter pub get
-        flutter clean
-        flutter pub get
-        pod init
-        sed -i '' 's/# platform/platform/' Podfile
-        sed -i '' "s/platform :ios, '9.0'/platform :ios, '11.0'/" Podfile
-        sed -i '' '/# Add the Firebase pod for Google Analytics/i\
-        \  flutter_application_path = "../"\
-        \  load File.join(flutter_application_path, ".ios", "Flutter", "podhelper.rb")\
-        ' Podfile
-        sed -i '' '/target '"'"'Runner'"'"' do/a\
-        \  use_frameworks!\
-        \  use_modular_headers!\
-        \  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))\
-        ' Podfile
-        cat Podfile
-
-    - name: Install CocoaPods
-      run: |
-        sudo gem install cocoapods
-        pod repo update
-
-    - name: Install CocoaPods Dependencies
-      run: |
-        cd ios
-        pod install
-
-    - name: Build iOS IPA
-      run: flutter build ios --release --no-codesign
-
-    # ... rest of your workflow ...
-
-    # ... rest of your workflow ...
-
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-          ruby-version: '3.0'
-
-    - name: Setup Fastlane
-      run: gem install fastlane
-
-    - name: Decode and install certificate
-      run: |
-          echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode > ./certificates/certificate.p12
-          security create-keychain -p "" build.keychain
-          security import ./certificates/certificate.p12 -k ~/Library/Keychains/build.keychain -P "" -T /usr/bin/codesign
-          security list-keychains -d user -s ~/Library/Keychains/build.keychain
-
-    - name: Decode and install provisioning profile
-      run: |
-          echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
-
-    - name: Run Fastlane for iOS
-      run: fastlane distribute --fastfile ios/fastlane/Fastfile
-      env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      - name: Build and Deploy
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} # Set this in GitHub Secrets
+        run: |
+          bundle exec fastlane beta
