@@ -9,46 +9,73 @@ on:
 jobs:
 
   build_ios:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-        name: Checkout code
-      - uses: subosito/flutter-action@v1
-        with:
-           channel: 'stable'
-      - name: Install dependencies
-        run: flutter pub get
-      - name: Install CocoaPods
-        run: |
-          sudo gem install cocoapods
-          pod repo update
-      - name: Install CocoaPods Dependencies
-        run: |
-          cd ios
-          pod install
-      - name: Build iOS IPA
-        run: flutter build ios --release --no-codesign
+   runs-on: macos-latest
+   steps:
+    - uses: actions/checkout@v3
+      name: Checkout code
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Check iOS directory and create Podfile
+      run: |
+        if [ -d "ios" ]; then
+          echo "iOS directory exists"
+          cd ios
+          if [ ! -f "Podfile" ]; then
+            echo "platform :ios, '11.0'" > Podfile
+            echo "target 'Runner' do" >> Podfile
+            echo "  use_frameworks!" >> Podfile
+            echo "  pod 'Flutter', :path => '.symlinks/flutter/ios'" >> Podfile
+            echo "  pod 'Firebase/Core'" >> Podfile
+            echo "end" >> Podfile
+            echo "Podfile created"
+          else
+            echo "Podfile already exists"
+          fi
+        else
+          echo "iOS directory does not exist. Please check your project structure."
+          exit 1
+        fi
+
+    - name: Install CocoaPods
+      run: |
+        sudo gem install cocoapods
+        pod repo update
+
+    - name: Install CocoaPods Dependencies
+      run: |
+        cd ios
+        pod install
+
+    - name: Build iOS IPA
+      run: flutter build ios --release --no-codesign
+
+        # ... rest of your workflow ...
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
           ruby-version: '3.0'
 
-      - name: Setup Fastlane
-        run: gem install fastlane
+    - name: Setup Fastlane
+      run: gem install fastlane
 
-      - name: Decode and install certificate
-        run: |
+    - name: Decode and install certificate
+      run: |
           echo "${{ secrets.CERTIFICATE_BASE64 }}" | base64 --decode > ./certificates/certificate.p12
           security create-keychain -p "" build.keychain
           security import ./certificates/certificate.p12 -k ~/Library/Keychains/build.keychain -P "" -T /usr/bin/codesign
           security list-keychains -d user -s ~/Library/Keychains/build.keychain
 
-      - name: Decode and install provisioning profile
-        run: |
+    - name: Decode and install provisioning profile
+      run: |
           echo "${{ secrets.PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
 
-      - name: Run Fastlane for iOS
-        run: fastlane distribute --fastfile ios/fastlane/Fastfile
-        env:
+    - name: Run Fastlane for iOS
+      run: fastlane distribute --fastfile ios/fastlane/Fastfile
+      env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
