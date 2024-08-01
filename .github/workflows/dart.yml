@@ -9,8 +9,8 @@ on:
 jobs:
 
   build_ios:
-   runs-on: macos-latest
-   steps:
+    runs-on: macos-latest
+    steps:
     - uses: actions/checkout@v3
       name: Checkout code
 
@@ -21,26 +21,37 @@ jobs:
     - name: Install dependencies
       run: flutter pub get
 
-    - name: Check iOS directory and create Podfile
+    - name: Setup Flutter for iOS
       run: |
-        if [ -d "ios" ]; then
-          echo "iOS directory exists"
-          cd ios
-          if [ ! -f "Podfile" ]; then
-            echo "platform :ios, '11.0'" > Podfile
-            echo "target 'Runner' do" >> Podfile
-            echo "  use_frameworks!" >> Podfile
-            echo "  pod 'Flutter', :path => '.symlinks/flutter/ios'" >> Podfile
-            echo "  pod 'Firebase/Core'" >> Podfile
-            echo "end" >> Podfile
-            echo "Podfile created"
-          else
-            echo "Podfile already exists"
-          fi
-        else
-          echo "iOS directory does not exist. Please check your project structure."
-          exit 1
-        fi
+        flutter precache --ios
+        flutter pub get
+        cd ios
+        rm -rf Pods Podfile.lock
+        pod deintegrate
+        pod setup
+
+    - name: Create and update Podfile
+      run: |
+        cd ios
+        cat > Podfile << EOL
+        platform :ios, '11.0'
+        
+        flutter_application_path = '../'
+        load File.join(flutter_application_path, '.ios', 'Flutter', 'podhelper.rb')
+        
+        target 'Runner' do
+          use_frameworks!
+          use_modular_headers!
+        
+          flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+        end
+        
+        post_install do |installer|
+          installer.pods_project.targets.each do |target|
+            flutter_additional_ios_build_settings(target)
+          end
+        end
+        EOL
 
     - name: Install CocoaPods
       run: |
@@ -55,7 +66,8 @@ jobs:
     - name: Build iOS IPA
       run: flutter build ios --release --no-codesign
 
-        # ... rest of your workflow ...
+    # ... rest of your workflow ...
+
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
