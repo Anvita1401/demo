@@ -8,9 +8,9 @@ on:
 
 jobs:
 
-  build_ios:
-    runs-on: macos-latest
-    steps:
+ build_ios:
+  runs-on: macos-latest
+  steps:
     - uses: actions/checkout@v3
       name: Checkout code
 
@@ -25,33 +25,27 @@ jobs:
       run: |
         flutter precache --ios
         flutter pub get
-        cd ios
-        rm -rf Pods Podfile.lock
-        pod deintegrate
-        pod setup
 
     - name: Create and update Podfile
       run: |
         cd ios
-        cat > Podfile << EOL
-        platform :ios, '11.0'
-        
-        flutter_application_path = '../'
-        load File.join(flutter_application_path, '.ios', 'Flutter', 'podhelper.rb')
-        
-        target 'Runner' do
-          use_frameworks!
-          use_modular_headers!
-        
-          flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-        end
-        
-        post_install do |installer|
-          installer.pods_project.targets.each do |target|
-            flutter_additional_ios_build_settings(target)
-          end
-        end
-        EOL
+        rm -f Podfile
+        flutter pub get
+        flutter clean
+        flutter pub get
+        pod init
+        sed -i '' 's/# platform/platform/' Podfile
+        sed -i '' "s/platform :ios, '9.0'/platform :ios, '11.0'/" Podfile
+        sed -i '' '/# Add the Firebase pod for Google Analytics/i\
+        \  flutter_application_path = "../"\
+        \  load File.join(flutter_application_path, ".ios", "Flutter", "podhelper.rb")\
+        ' Podfile
+        sed -i '' '/target '"'"'Runner'"'"' do/a\
+        \  use_frameworks!\
+        \  use_modular_headers!\
+        \  flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))\
+        ' Podfile
+        cat Podfile
 
     - name: Install CocoaPods
       run: |
@@ -65,6 +59,8 @@ jobs:
 
     - name: Build iOS IPA
       run: flutter build ios --release --no-codesign
+
+    # ... rest of your workflow ...
 
     # ... rest of your workflow ...
 
