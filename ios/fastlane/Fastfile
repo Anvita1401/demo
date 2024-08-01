@@ -4,10 +4,10 @@ platform :ios do
   desc "Distribute the iOS app to Firebase App Distribution"
   lane :distribute do
     firebase_app_distribution(
-      app: "1:378040104990:ios:9624bfb9ba7987ec12d60f", # Replace with your Firebase App ID
+      app: "1:378040104990:ios:9624bfb9ba7987ec12d60f",
       groups: "test-group-1", # Define your tester groups
       release_notes: "New features and improvements",
-      ipa_path: "./build/ios/iphoneos/Runner.ipa" # Path to the .ipa file
+      ipa_path: "./build/ios/iphoneos/Runner.ipa"
     )
   end
 end
