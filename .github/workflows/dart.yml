@@ -31,4 +31,5 @@ jobs:
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} # Set this in GitHub Secrets
         run: |
+          cd ios
           bundle exec fastlane beta
