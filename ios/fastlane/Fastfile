@@ -6,14 +6,12 @@ platform :ios do
   desc "Deploy a new build to Firebase App Distribution"
   lane :beta do
     build_app(
-      scheme: "Runner",
-      export_method: "app-store"
+      scheme: "YourAppScheme",
     )
 
     firebase_app_distribution(
       app: "1:378040104990:ios:9624bfb9ba7987ec12d60f", # Replace with your Firebase App ID
       groups: "test-group-1", # Replace with the group name or email list
-      firebase_cli_path: "/usr/local/bin/firebase" # Optional, if you have a custom path
     )
   end
 end

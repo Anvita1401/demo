@@ -1,15 +1,12 @@
-name: Dart
+name: Deploy to Firebase
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main # or your branch name
 
 jobs:
-
   build:
-    name: Build and Deploy
     runs-on: macos-latest
 
     steps:
@@ -19,17 +16,16 @@ jobs:
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0' # Adjust to the Ruby version you use
+          ruby-version: '3.0'# or your Ruby version
 
       - name: Install dependencies
         run: |
-          gem install bundler
-          bundle install
           gem install fastlane
+          bundle install
 
-      - name: Build and Deploy
+      - name: Build and distribute to Firebase
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} # Set this in GitHub Secrets
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }} # Firebase authentication token
         run: |
           cd ios
-          bundle exec fastlane beta
+          fastlane beta
