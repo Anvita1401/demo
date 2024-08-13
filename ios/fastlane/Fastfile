@@ -5,8 +5,8 @@ default_platform(:ios)
 platform :ios do
   desc "Deploy a new build to Firebase App Distribution"
   lane :beta do
-    build_app(
-      scheme: "YourAppScheme",
+    build_ios_app(
+      scheme: "Runner",
     )
 
     firebase_app_distribution(
