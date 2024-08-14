@@ -28,7 +28,7 @@ jobs:
         run: flutter pub get
 
       - name: Create Keystore file
-        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > demo-test.keystore
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/demotest.keystore
 
       - name: List Files in android/app Directory
         run: |
@@ -39,7 +39,7 @@ jobs:
           echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=demo-test" >> android/key.properties
-          echo "storeFile=demo-test.keystore" >> android/key.properties
+          echo "storeFile=android/app/demotest.keystore" >> android/key.properties
 
 
       - name: Build APK
