@@ -36,10 +36,10 @@ jobs:
 
       - name: Create Key Properties
         run: |
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> key.properties
-          echo "keyAlias=demo-test" >> key.properties
-          echo "storeFile=android/app/demo-test.keystore" >> key.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=demo-test" >> android/key.properties
+          echo "storeFile=android/app/demo-test.keystore" >> android/key.properties
 
       - name: List Files in root
         run: |
