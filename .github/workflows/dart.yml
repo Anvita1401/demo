@@ -32,7 +32,6 @@ jobs:
 
       - name: List Files in android/app Directory
         run: |
-          echo "Contents of android/app directory:"
           ls -la android/app
 
       - name: Create Key Properties
@@ -42,6 +41,9 @@ jobs:
           echo "keyAlias=demo-test" >> key.properties
           echo "storeFile=android/app/demo-test.keystore" >> key.properties
 
+      - name: List Files in root
+        run: |
+          ls -la 
 
       - name: Build APK
         run: flutter build apk --release
