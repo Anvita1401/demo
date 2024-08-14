@@ -41,10 +41,6 @@ jobs:
           echo "keyAlias=demo-test" >> android/key.properties
           echo "storeFile=android/app/demo-test.keystore" >> android/key.properties
 
-      - name: List Files in root
-        run: |
-          ls -la 
-          cat key.properties
 
       - name: Build APK
         run: flutter build apk --release
