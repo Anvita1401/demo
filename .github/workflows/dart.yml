@@ -44,7 +44,7 @@ jobs:
           ls -la android/app
 
       - name: Build APK
-        run: flutter build apk --release --verbose
+        run: flutter build apk --release
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
