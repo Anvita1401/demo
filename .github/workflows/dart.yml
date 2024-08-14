@@ -44,6 +44,7 @@ jobs:
       - name: List Files in root
         run: |
           ls -la 
+          cat key.properties
 
       - name: Build APK
         run: flutter build apk --release
