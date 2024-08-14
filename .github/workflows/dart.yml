@@ -30,18 +30,15 @@ jobs:
       - name: Create Keystore file
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/demo-test.keystore
 
-      - name: Create Key Properties
+      - name: Generate keystore.properties
         run: |
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> key.properties
-          echo "keyAlias=demo-test" >> key.properties
-          echo "storeFile=android/app/demo-test.keystore" >> key.properties
+          cat <<EOF > keystore.properties
+          storePassword="jombay"
+          keyPassword="jombay"
+          keyAlias="demo-test"
+          storeFile=android/app/demo-test.keystore
+          EOF
 
-      - name: Check files
-        run: |
-          ls -la
-          cat key.properties
-          ls -la android/app
 
       - name: Build APK
         run: flutter build apk --release
