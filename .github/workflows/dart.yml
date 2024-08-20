@@ -51,5 +51,5 @@ jobs:
         run: |
           firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
             --app ${{ secrets.FIREBASE_APP_ID }} \
-            --token $FIREBASE_TOKEN \
+            --serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }} \
             --groups "test-group-1"
