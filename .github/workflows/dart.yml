@@ -46,8 +46,12 @@ jobs:
         with:
           ruby-version: '3.0'
 
+      - name: Bundle install
+        run: bundle install
+
       - name: setup fastlane
         run: gem install fastlane
+
 
       - name: Run Fastlane
         run: fastlane distribute
