@@ -38,6 +38,8 @@ jobs:
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=demo-test" >> android/key.properties
           echo "storeFile=demotest.keystore" >> android/key.properties
+          
+
       - name: Build APK
         run: flutter build apk --release
 
@@ -48,6 +50,7 @@ jobs:
         run: |
           echo "${{ secrets.CREDENTIAL_FILE_CONTENT}}" > ${HOME}/firebase-service-account.json
           export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/firebase-service-account.json"
+
       - name: Upload APK to Firebase
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
