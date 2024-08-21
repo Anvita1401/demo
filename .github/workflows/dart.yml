@@ -45,7 +45,7 @@ jobs:
       - name: Authenticate with Firebase using service account
         run: |
           echo "${{ secrets.CREDENTIAL_FILE_CONTENT}}" > ${HOME}/firebase-service-account.json
-          export GOOGLE_APPLICATION_CREDENTIALS= "${HOME}/firebase-service-account.json"
+          export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/firebase-service-account.json"
 
       - name: Home
         run: ls -la ${HOME}
