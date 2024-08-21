@@ -48,7 +48,7 @@ jobs:
           export GOOGLE_APPLICATION_CREDENTIALS= ${HOME}/firebase-service-account.json
 
       - name: Home
-        run: ls -la ${{HOME}}
+        run: ls -la ${HOME}
 
       - name: Build APK
         run: flutter build apk --release
