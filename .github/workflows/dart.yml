@@ -20,13 +20,6 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
-          flutter-version: '3.16.7'
-
-      - name: Flutter clean
-        run: flutter clean
-
-      - name: Install dependencies
-        run: flutter pub get
 
       - name: Create Keystore file
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/demotest.keystore
@@ -38,23 +31,26 @@ jobs:
           echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=demo-test" >> android/key.properties
           echo "storeFile=demotest.keystore" >> android/key.properties
-          
-      - name: Install Firebase CLI
-        run: npm install -g firebase-tools
 
-      - name: Authenticate with Firebase using service account
-        run: |
-          echo "${{ secrets.CREDENTIAL_FILE_CONTENT}}" > ${HOME}/firebase-service-account.json
-          export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/firebase-service-account.json"
+      - name: Flutter clean
+        run: flutter clean
 
-      - name: Home
-        run: ls -la ${HOME}
+      - name: Install dependencies
+        run: flutter pub get
 
-      - name: Build APK
+      - name: Build Android APK
         run: flutter build apk --release
 
-      - name: Upload APK to Firebase
-        run: |
-          firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk \
-            --app ${{ secrets.FIREBASE_APP_ID }} \
-            --groups "test-group-1"
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+
+      - name: setup fastlane
+        run: gem install fastlane
+
+      - name: Run Fastlane
+        run: fastlane distribute
+        env:
+          CREDENTIAL_FILE_CONTENT: ${{ secrets.CREDENTIAL_FILE_CONTENT}}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID}}
